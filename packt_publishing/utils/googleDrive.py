@@ -1,9 +1,24 @@
-#!/usr/bin/env python
+from __future__ import (  # We require Python 2.6 or later
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
-from __future__ import print_function, unicode_literals, division, absolute_import  # We require Python 2.6 or later
-
+import configparser
+import io
+import logging
+import os
 import sys
-import time
+
+import httplib2
+
+import apiclient
+import oauth2client
+import packt_publishing.utils.logger as log_manager
+from apiclient import discovery
+from apiclient.http import MediaFileUpload, MediaIoBaseDownload
+from oauth2client import client, tools
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -16,22 +31,7 @@ if PY2:
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-import requests
-import os
-import configparser
-import argparse
-import httplib2
-import io
-import oauth2client
-from oauth2client import client
-from oauth2client import tools
-import apiclient
-from apiclient import discovery
-from apiclient.http import MediaFileUpload
-from apiclient.http import MediaIoBaseDownload
 
-import logging
-import utils.logger as log_manager
 logger = log_manager.get_logger(__name__)
 
 ####################################-GOOGLE DRIVE MANAGER############################################
@@ -42,7 +42,7 @@ FILE_TYPE=frozenset(["FILE","FOLDER"])
 
 class GoogleDriveManager():
     """Allows to upload and download new content to Google Drive"""
-    
+
     def __init__(self, cfg_file_path):
         self.__set_config_data(cfg_file_path)
         self._root_folder= GoogleDriveFile(self.folder_name)
@@ -62,7 +62,7 @@ class GoogleDriveManager():
             raise configparser.Error('{} file not found'.format(cfg_file_path))
         self.app_name = configuration.get("GOOGLE_DRIVE_DATA", 'gdAppName')
         self.folder_name = configuration.get("GOOGLE_DRIVE_DATA", 'gdFolderName')
-	        
+
     def __get_credentials(self):
         '''Gets valid user credentials from storage.
         If nothing has been stored, or if the stored credentials are invalid,
@@ -84,7 +84,7 @@ class GoogleDriveManager():
                 parser = argparse.ArgumentParser(description=__doc__,
                          formatter_class=argparse.RawDescriptionHelpFormatter,
                          parents=[tools.argparser])
-                flags = parser.parse_args(sys.argv[2:])  
+                flags = parser.parse_args(sys.argv[2:])
             except ImportError:
                 flags = None
             if flags:
@@ -93,7 +93,7 @@ class GoogleDriveManager():
                 credentials = tools.run(flow, store)
             logger.success('Storing credentials to ' + credential_path)
         return credentials
-       
+
     def __find_folder_or_file_by_name(self,file_name,parent_id=None):
         if(file_name ==None or len(file_name)==0):
             return False
@@ -110,7 +110,7 @@ class GoogleDriveManager():
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 return False;
-        
+
     def check_if_file_exist_create_new_one(self,file_name,file_type="FOLDER",parent_id=None):
         if file_type not in FILE_TYPE:
             raise ValueError("Incorrect file_type arg. Allowed types are: %s"%(', '.join(list(FILE_TYPE))))
@@ -125,8 +125,8 @@ class GoogleDriveManager():
                 id=self.__create_new_folder(file_name,parent_id)
 
         return id
-        
-    
+
+
     def list_all_files_in_main_folder(self):
         results = self._service.files().list().execute()
         items = results.get('files', [])
@@ -136,7 +136,7 @@ class GoogleDriveManager():
             logger.debug('Files:')
             for item in items:
                 logger.debug('{0} ({1})'.format(item['name'], item['id']))
-        
+
     def __create_new_folder(self,folder_name,parent_folders_id =None):
         parent_id= parent_folders_id if parent_folders_id is None else [parent_folders_id]
         file_metadata = {
@@ -147,7 +147,7 @@ class GoogleDriveManager():
         file = self._service.files().create(body=file_metadata, fields='id').execute()
         logger.success('Created Folder ID: %s' % file.get('id'))
         return file.get('id')
-    
+
 
     def __extract_filename_ext_and_mimetype_from_path(self, path):
         splitted_path= os.path.split(path)
@@ -164,12 +164,12 @@ class GoogleDriveManager():
           'name' : file_name,
           'parents': parent_id
         }
-        media = MediaFileUpload(path,mimetype=file_mime_type,  # if None, it will be guessed 
+        media = MediaFileUpload(path,mimetype=file_mime_type,  # if None, it will be guessed
                                 resumable=True)
         file = self._service.files().create(body=file_metadata,media_body=media,fields='id').execute()
         logger.debug('File ID: {}'.format(file.get('id')))
-        return file.get('id') 
-       
+        return file.get('id')
+
     def send_files(self, file_paths):
         if file_paths is None or len(file_paths)==0:
             raise ValueError("Incorrect file paths argument format")
@@ -184,7 +184,7 @@ class GoogleDriveManager():
                         logger.info('File {} already exists on Google Drive'.format(file_attrs[0]))
                 except Exception as e:
                         logger.error('Error {} occurred while sending file: {} to Google Drive'.format(e, file_attrs[0]))
-                               
+
     def download_file(self,file_name,file_id):
         request = self._service.files().get_media(fileId=file_id)
         fh = io.FileIO(file_name, 'wb')
@@ -193,11 +193,10 @@ class GoogleDriveManager():
         while done is False:
             status, done = downloader.next_chunk()
             logger.debug("Download %d%%." % int(status.progress() * 100))
-               
+
 class GoogleDriveFile():
     ''' Helper class that describes File or Folder stored on GoogleDrive server'''
     def __init__(self,file_name):
         self.name= file_name
         self.id =None
         self.parent_id=''
-

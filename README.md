@@ -10,7 +10,7 @@
   To install pip, download:  https://bootstrap.pypa.io/get-pip.py ,
   then run the following command:
 
-  ```  
+  ```
   python get-pip.py
   ```
 * Optionally install [*virtualenv*](http://docs.python-guide.org/en/latest/dev/virtualenvs/) (pip install virtualenv)
@@ -20,9 +20,9 @@
   pip install -r requirements.txt
   ```
 
-* change a name of **configFileTemplate.cfg** to **configFile.cfg**  
+* change a name of **configFileTemplate.cfg** to **configFile.cfg**
 * change your login credentials in **configFile.cfg** file
-  
+
 
 ### Usage:
 1. The script **[packtPublishingFreeEbook.py]** might be fired up with one of 7 arguments:
@@ -41,114 +41,114 @@
   ```
   python packtPublishingFreeEbook.py -gd
   ```
-  
+
   - Option *-da* [--dall] - downloads all ebooks from your account
   ```
   python packtPublishingFreeEbook.py -da
   ```
-  
+
   - Option *-dc* [--dchosen] - downloads chosen titles specified under *[downloadBookTitles]* field in *configFile.cfg*
   ```
   python packtPublishingFreeEbook.py -dc
   ```
 
-  - Option *-sgd* [--sgd] - claims and uploads a book to *[gdFolderName]* folder onto Google Drive (more about setup Google Drive api in GOOGLE_DRIVE_API Setup)  
+  - Option *-sgd* [--sgd] - claims and uploads a book to *[gdFolderName]* folder onto Google Drive (more about setup Google Drive api in GOOGLE_DRIVE_API Setup)
   ```
   python packtPublishingFreeEbook.py -sgd
   ```
-  
-  - Option *-m* [--mail] - claims and sends an email with the newest book (mail option confguration under [MAIL] path in *configFile.cfg*) 
+
+  - Option *-m* [--mail] - claims and sends an email with the newest book (mail option confguration under [MAIL] path in *configFile.cfg*)
   ```
   python packtPublishingFreeEbook.py -m
   ```
-  
+
   - SubOption *-f* [--folder] - downloads an ebook into a created folder, named as ebook's title
   ```
   python packtPublishingFreeEbook.py -gd -f
   ```
-  
+
 2. You can set the script to be invoked automatically:
-  
+
   **LINUX** (tested on UBUNTU 16.04):
-  
+
   modify access permissions of the script:
-  
+
   ```
-  $ chmod a+x packtPublishingFreeEbook.py 
+  $ chmod a+x packtPublishingFreeEbook.py
   ```
-  
+
   **cron** setup (more: https://help.ubuntu.com/community/CronHowto) :
-  
+
   ```
   $ sudo crontab -e
   ```
-  
+
   paste (modify all paths correctly according to your setup):
-  
+
   ```
   0 12 * * * cd /home/me/Desktop/PacktScripts/ && /usr/bin/python3 packtPublishingFreeEbook.py -gd > /home/me/Desktop/PacktScripts/packtPublishingFreeEbook.log 2>&1
   ```
-  
+
   and save the crontab file. To verify if CRON fires up the script correctly, run a command:
-  
+
   ```
   $ sudo grep CRON /var/log/syslog
   ```
-  
+
   **WINDOWS** (tested on win7,8,10):
-  
+
   **schtasks.exe** setup (more info: https://technet.microsoft.com/en-us/library/cc725744.aspx) :
-  
+
   To create the task that will be called at 12:00 everyday, run the following command in **cmd** (modify all paths according to your setup):
-  
+
   ```
   schtasks /create /sc DAILY /tn "grabEbookFromPacktTask" /tr "C:\Users\me\Desktop\GrabPacktFreeBook\grabEbookFromPacktTask.bat" /st 12:00
   ```
-  
+
   To check if the "grabEbookFromPacktTask" has been added to all scheduled tasks on your computer:
-  
+
   ```
   schtasks /query
   ```
-  
+
   To run the task manually:
-  
+
   ```
   schtasks /run /tn "grabEbookFromPacktTask"
-  ```  
-  
+  ```
+
   To delete the task:
-  
+
   ```
   schtasks /delete /tn "grabEbookFromPacktTask"
   ```
-  
+
   If you want to log all downloads add -l switch to grabEbookFromPacktTask i.e.
   ```
   schtasks /create /sc DAILY /tn "grabEbookFromPacktTask" /tr "C:\Users\me\Desktop\GrabPacktFreeBook\grabEbookFromPacktTask.bat -l" /st 12:00
-  ``` 
-  
+  ```
+
   If you want to additionaly make command line windows stay open after download add -p switch i.e.
   ```
   schtasks /create /sc DAILY /tn "grabEbookFromPacktTask" /tr "C:\Users\me\Desktop\GrabPacktFreeBook\grabEbookFromPacktTask.bat -l -p" /st 12:00
-  ``` 
+  ```
 
 * EXAMPLE: download **'Unity 4.x Game AI Programming'** and  **'Multithreading in C# 5.0 Cookbook'** books in all available formats  (pdf, epub, mobi) with zipped source code file from your packt account
-  
+
   To download chosen titles from your account, you must put them into **downloadBookTitles** in **configFile.cfg** as shown below:
-  
+
   **configFile.cfg** example:
   ```
     [LOGIN_DATA]
     email= youremail@youremail.com
-    password= yourpassword    
-    
+    password= yourpassword
+
     [DOWNLOAD_DATA]
     downloadFolderPath: C:\Users\me\Desktop\myEbooksFromPackt
     downloadFormats: pdf, epub, mobi, code
     downloadBookTitles: Unity 4.x Game AI Programming , Multithreading in C# 5.0 Cookbook
     logFile: logfile.log
-    
+
     [GOOGLE_DRIVE_DATA]
     gdAppName: GoogleDriveManager
     gdFolderName: PACKT_EBOOKS
@@ -159,9 +159,9 @@
   ```
 
 ### GOOGLE_DRIVE_API Setup:
-Full info about the Google Drive python API can be found [here](https://developers.google.com/drive/v3/web/quickstart/python)  
+Full info about the Google Drive python API can be found [here](https://developers.google.com/drive/v3/web/quickstart/python)
 
-1. Turn on the Drive API  
+1. Turn on the Drive API
   - Use [this wizard](https://console.developers.google.com/flows/enableapi?apiid=drive) to create or select a project in the Google Developers Console and automatically turn on the API. Click Continue, then Go to credentials.
   - On the *Add credentials to your project page*, click the *Cancel* button.
   - At the top of the page, select the OAuth consent screen tab. Select an Email address, enter a *Product name* if not already set, and click the Save button.
@@ -175,15 +175,28 @@ Full info about the Google Drive python API can be found [here](https://develope
   - Run the following command to install the library using pip:
   ```
   pip install --upgrade google-api-python-client  or pip install --upgrade google-api-python-client-py3
-  ``` 
+  ```
 
 3. Create credentials folder:
   - Simply, just fire up the script with *-sgd* argument; During first launch you will see a prompt in your browser asking for permissions, click then *allow*
   ```
   python packtPublishingFreeEbook.py -sgd
-  ```  
+  ```
 4. Already done!
   - Run the same command as above to claim and upload the eBook to Google Drive.
 
 
 In case of any questions feel free to ask, happy grabbing!
+
+### Package with PEX
+
+[PEX](https://pex.readthedocs.io/en/stable/whatispex.html) files are
+self-contained executable Python virtual environments. You can create one with
+this packages using command:
+
+    pip install pex
+    pex . -e packt_publishing.claim_free_ebook:main packt_claim_free_ebook.pex
+
+You can then use command resulting excecutable file `packt_claim_free_ebook.pex`
+instead of `python packtPublishingFreeEbook.py ...` (without need of installing
+anything additional).

@@ -1,0 +1,5 @@
+__author__ = 'Lukasz Uszko, Daniel van Dorp'
+__copyright__ = 'Copyright 2016'
+__license__ = 'MIT'
+__version__ = '1.0.0'
+__email__ = 'lukasz.uszko@gmail.com, daniel@vandorp.biz'

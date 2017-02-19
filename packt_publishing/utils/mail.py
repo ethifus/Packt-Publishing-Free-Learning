@@ -1,9 +1,28 @@
 #!/usr/bin/env python
 
-from __future__ import print_function, unicode_literals, division, absolute_import  # We require Python 2.6 or later
+from __future__ import (  # We require Python 2.6 or later
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
+import configparser
+import logging
+import os
+import re
+import smtplib
 import sys
 import time
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+from os.path import basename
+
+import requests
+
+import packt_publishing.utils.logger as log_manager
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -16,19 +35,7 @@ if PY2:
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-import requests
-import os
-import configparser
-import re
-import smtplib
-from os.path import basename
-from email.mime.application import MIMEApplication
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.utils import COMMASPACE, formatdate
 
-import logging
-import utils.logger as log_manager
 logger = log_manager.get_logger(__name__)
 
 ####################################-SENDING EMAILS CONTAINING EBOOK-############################################
@@ -83,11 +90,10 @@ class MailBook:
             smtp.sendmail(self._send_from, self._to_emails, msg.as_string())
             logger.info('Email to {} has been succesfully sent'.format(','.join(self._to_emails)))
         except Exception as e:
-            logger.error('Sending failed with an error: {}'.format(str(e)))    
+            logger.error('Sending failed with an error: {}'.format(str(e)))
         smtp.quit()
 
     def send_kindle(self, book):
         if not self._kindle_emails:
             return
-        self.send_book(book, to=self._kindle_emails) 
-
+        self.send_book(book, to=self._kindle_emails)

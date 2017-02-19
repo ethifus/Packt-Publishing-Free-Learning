@@ -1,15 +1,25 @@
 #!/usr/bin/env python
 
-from __future__ import print_function, unicode_literals, division, absolute_import  # We require Python 2.6 or later
+from __future__ import (  # We require Python 2.6 or later
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
-__author__ = "Lukasz Uszko, Daniel van Dorp"
-__copyright__ = "Copyright 2016"
-__license__ = "MIT"
-__version__ = "1.0.0"
-__email__ = "lukasz.uszko@gmail.com, daniel@vandorp.biz"
-
+import argparse
+import configparser
+import logging
+import os
+import re
 import sys
 import time
+from collections import OrderedDict
+
+import requests
+from bs4 import BeautifulSoup
+
+import packt_publishing.utils.logger as log_manager
 
 PY2 = sys.version_info[0] == 2
 if PY2:
@@ -22,17 +32,8 @@ if PY2:
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-import requests
-import os
-import configparser
-import argparse
-import re
-from collections import OrderedDict
-from bs4 import BeautifulSoup
-import logging
 
 
-import utils.logger as log_manager
 logger = log_manager.get_logger(__name__)
 # downgrading logging level for requests
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -295,8 +296,7 @@ class BookDownloader(object):
 
 
 #Main
-if __name__ == '__main__':
-
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-g", "--grab", help="grabs daily ebook",
                         action="store_true")
@@ -334,11 +334,11 @@ if __name__ == '__main__':
 
         if args.grabd or args.dall or args.dchosen or args.sgd or args.mail:
             downloader.getDataOfAllMyBooks()
-        
+
         intoFolder = False
         if args.folder:
             intoFolder = True
-            
+
         if args.grabd or args.sgd or args.mail:
             if args.sgd or args.mail:
                 myAccount.downloadFolderPath = os.getcwd()
@@ -374,3 +374,7 @@ if __name__ == '__main__':
         logger.success("Good, looks like all went well! :-)")
     except Exception as e:
         logger.error("Exception occurred {}".format(e))
+
+
+if __name__ == '__main__':
+    main()
