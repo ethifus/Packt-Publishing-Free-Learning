@@ -35,7 +35,8 @@ setup(
     install_requires=[
         'requests==2.13.0',
         'beautifulsoup4==4.5.1',
-        'future==0.16.0'
+        'future==0.16.0',
+        'configparser==3.5.0'
     ],
     packages=get_packages(),
     entry_points={

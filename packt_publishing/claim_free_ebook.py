@@ -314,9 +314,11 @@ def main():
                         action="store_true")
     parser.add_argument("-f", "--folder", help="downloads eBook into a folder", default=False,
                         action="store_true")
+    parser.add_argument("-c", "--config", help="specify custom config file (use 'configFile.cfg' by default)",
+                        default='configFile.cfg')
 
     args = parser.parse_args()
-    cfgFilePath = os.path.join(os.getcwd(), "configFile.cfg")
+    cfgFilePath = args.config
 
     try:
         myAccount = PacktAccountData(cfgFilePath)
